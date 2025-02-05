@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Units Converter</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+        }
+
+        .unit-converter {
+            margin-bottom: 30px;
+        }
+
+        .unit-dropdown {
+            width: 100%;
+        }
+
+        .result {
+            font-size: 1.5rem;
+            margin-top: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .premium {
+            color: red;
+        }
+
+        .definition {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .explanation {
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+
+        .formula {
+            margin-top: 10px;
+            font-size: 1rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Units Converter</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="conversions.html">Convert Units</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conversion Section -->
+    <div class="container">
+        <h2 class="text-center">Unit Conversion</h2>
+        <div class="unit-converter">
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select id="category" class="form-select unit-dropdown">
+                    <option value="">Select Category</option>
+                    <option value="Length">Length</option>
+                    <option value="Temperature">Temperature</option>
+                    <option value="Speed">Speed</option>
+                    <option value="Volume">Volume</option>
+                    <option value="Weight">Weight</option>
+                    <option value="Currency">Currency</option>
+                    <option value="Area">Area</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="fromUnit" class="form-label">From Unit</label>
+                <select id="fromUnit" class="form-select unit-dropdown" disabled>
+                    <option value="">Select Unit</option>
+                    <!-- Dynamic options will be populated here -->
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="toUnit" class="form-label">To Unit</label>
+                <select id="toUnit" class="form-select unit-dropdown" disabled>
+                    <option value="">Select Unit</option>
+                    <!-- Dynamic options will be populated here -->
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="inputValue" class="form-label">Value</label>
+                <input type="number" id="inputValue" class="form-control" placeholder="Enter value to convert">
+            </div>
+
+            <button id="convertBtn" class="btn btn-primary w-100">Convert</button>
+
+            <div class="result" id="result"></div>
+            <div class="alert alert-info mt-3" id="premiumAlert" style="display: none;">
+                This conversion requires a premium subscription.
+            </div>
+
+            <div class="definition" id="definition"></div>
+            <div class="explanation" id="explanation"></div>
+            <div class="formula" id="formula"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer bg-dark text-light py-4">
+        <p>&copy; 2024 Units Converter. All Rights Reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add unit conversion options for each category
+        const categoryUnits = {
+            Length: [
+                { id: 'm', unit: 'Meter' },
+                { id: 'km', unit: 'Kilometer' },
+                { id: 'cm', unit: 'Centimeter' },
+                { id: 'mm', unit: 'Millimeter' },
+                { id: 'mile', unit: 'Mile' },
+                { id: 'yard', unit: 'Yard' },
+                { id: 'foot', unit: 'Foot' }
+            ],
+            Temperature: [
+                { id: 'C', unit: 'Celsius' },
+                { id: 'F', unit: 'Fahrenheit' },
+                { id: 'K', unit: 'Kelvin' }
+            ],
+            Speed: [
+                { id: 'mps', unit: 'Meters per second' },
+                { id: 'kmph', unit: 'Kilometers per hour' },
+                { id: 'mph', unit: 'Miles per hour' },
+                { id: 'fps', unit: 'Feet per second' }
+            ],
+            Volume: [
+                { id: 'l', unit: 'Liter' },
+                { id: 'ml', unit: 'Milliliter' },
+                { id: 'm3', unit: 'Cubic meter' },
+                { id: 'ft3', unit: 'Cubic feet' },
+                { id: 'gallon', unit: 'Gallon' },
+                { id: 'quart', unit: 'Quart' }
+            ],
+            Weight: [
+                { id: 'kg', unit: 'Kilogram' },
+                { id: 'g', unit: 'Gram' },
+                { id: 'lb', unit: 'Pound' },
+                { id: 'oz', unit: 'Ounce' },
+                { id: 'stone', unit: 'Stone' }
+            ],
+            Currency: [
+                { id: 'USD', unit: 'US Dollar' },
+                { id: 'EUR', unit: 'Euro' },
+                { id: 'GBP', unit: 'British Pound' },
+                { id: 'INR', unit: 'Indian Rupee' },
+                { id: 'JPY', unit: 'Japanese Yen' }
+            ],
+            Area: [
+                { id: 'm2', unit: 'Square Meter' },
+                { id: 'km2', unit: 'Square Kilometer' },
+                { id: 'ft2', unit: 'Square Feet' },
+                { id: 'ac', unit: 'Acre' },
+                { id: 'sqyard', unit: 'Square Yard' }
+            ]
+        };
+
+        // Function to populate units based on selected category
+        function populateUnits(category) {
+            const fromUnitDropdown = document.getElementById('fromUnit');
+            const toUnitDropdown = document.getElementById('toUnit');
+            const units = categoryUnits[category];
+
+            // Clear previous options
+            fromUnitDropdown.innerHTML = '<option value="">Select Unit</option>';
+            toUnitDropdown.innerHTML = '<option value="">Select Unit</option>';
+
+            // Add new options based on selected category
+            units.forEach(unit => {
+                const optionFrom = document.createElement('option');
+                optionFrom.value = unit.id;
+                optionFrom.textContent = unit.unit;
+                fromUnitDropdown.appendChild(optionFrom);
+
+                const optionTo = document.createElement('option');
+                optionTo.value = unit.id;
+                optionTo.textContent = unit.unit;
+                toUnitDropdown.appendChild(optionTo);
+            });
+        }
+
+        // Handle category selection change
+        document.getElementById('category').addEventListener('change', function () {
+            const selectedCategory = this.value;
+            if (selectedCategory) {
+                populateUnits(selectedCategory);
+                document.getElementById('fromUnit').disabled = false;
+                document.getElementById('toUnit').disabled = false;
+                document.getElementById('premiumAlert').style.display = 'none';
+                document.getElementById('definition').textContent = '';  // Clear previous definition and explanation
+                document.getElementById('explanation').textContent = '';
+                document.getElementById('formula').textContent = '';
+            } else {
+                document.getElementById('fromUnit').disabled = true;
+                document.getElementById('toUnit').disabled = true;
+                document.getElementById('premiumAlert').style.display = 'none';
+                document.getElementById('definition').textContent = '';  // Clear previous definition and explanation
+                document.getElementById('explanation').textContent = '';
+                document.getElementById('formula').textContent = '';
+            }
+        });
+
+        // Conversion Logic and Explanation
+        function getExplanationAndFormula(category, fromUnit, toUnit, value) {
+            const explanations = {
+                Length: {
+                    formula: `${value} ${fromUnit} × conversion factor = result in ${toUnit}`,
+                    explanation: 'To convert length, multiply the value by the corresponding conversion factor based on the units chosen.'
+                },
+                Temperature: {
+                    formula: `${value}° ${fromUnit} = (${value} - 32) * 5/9 + 273.15° K`,
+                    explanation: 'To convert temperature, use the specific formula for each conversion, like Celsius to Fahrenheit or Celsius to Kelvin.'
+                },
+                Speed: {
+                    formula: `${value} ${fromUnit} × conversion factor = result in ${toUnit}`,
+                    explanation: 'To convert speed, multiply the value by the conversion factor from one unit to another, like meters per second to kilometers per hour.'
+                },
+                Volume: {
+                    formula: `${value} ${fromUnit} × conversion factor = result in ${toUnit}`,
+                    explanation: 'Volume conversion follows a similar pattern, where you multiply by the appropriate factor, like liters to milliliters.'
+                },
+                Weight: {
+                    formula: `${value} ${fromUnit} × conversion factor = result in ${toUnit}`,
+                    explanation: 'To convert weight, multiply the given weight by the correct conversion factor for the chosen units.'
+                },
+                Currency: {
+                    formula: `${value} ${fromUnit} × exchange rate = result in ${toUnit}`,
+                    explanation: 'Currency conversions use the exchange rate to calculate how much one unit of currency is worth in another.'
+                },
+                Area: {
+                    formula: `${value} ${fromUnit} × conversion factor = result in ${toUnit}`,
+                    explanation: 'To convert area, multiply the value by the conversion factor between the two area units selected.'
+                }
+            };
+
+            return explanations[category] || { formula: '', explanation: '' };
+        }
+
+        // Handle Convert Button Click
+        document.getElementById('convertBtn').addEventListener('click', function () {
+            const category = document.getElementById('category').value;
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+            const inputValue = parseFloat(document.getElementById('inputValue').value);
+
+            if (!category || !fromUnit || !toUnit || isNaN(inputValue)) {
+                alert('Please select all fields and enter a valid value.');
+                return;
+            }
+
+            const units = categoryUnits[category];
+            const fromUnitData = units.find(unit => unit.id === fromUnit);
+            const toUnitData = units.find(unit => unit.id === toUnit);
+
+            let result = 0;
+
+            // Conversion logic (e.g., Length, Temperature)
+            if (category === 'Length') {
+                if (fromUnit === 'm' && toUnit === 'km') result = inputValue / 1000;
+                if (fromUnit === 'm' && toUnit === 'cm') result = inputValue * 100;
+                if (fromUnit === 'm' && toUnit === 'mm') result = inputValue * 1000;
+                if (fromUnit === 'm' && toUnit === 'mile') result = inputValue / 1609.34;
+                if (fromUnit === 'm' && toUnit === 'yard') result = inputValue * 1.09361;
+                if (fromUnit === 'm' && toUnit === 'foot') result = inputValue * 3.28084;
+            }
+
+            // Get the explanation and formula
+            const { formula, explanation } = getExplanationAndFormula(category, fromUnit, toUnit, inputValue);
+
+            // Display result, definition, explanation, and formula
+            document.getElementById('result').textContent = `Converted value: ${result} ${toUnitData.unit}`;
+            document.getElementById('definition').textContent = `Definition: Length is a measure of distance.`;
+            document.getElementById('explanation').textContent = explanation;
+            document.getElementById('formula').textContent = formula;
+        });
+    </script>
+</body>
+
+</html>
